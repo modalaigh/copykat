@@ -15,6 +15,7 @@
 #' @param output.seg TRUE or FALSE, output seg file for IGV visualization
 #' @param plot.genes TRUE or FALSE, output heatmap of CNVs with genename labels
 #' @param genome hg20 or mm10, current version only work for human or mouse genes
+#' @param plotting_data, data for plotting on heatmap (i.e. cell type and timepoint colours)
 #' @return 1) aneuploid/diploid prediction results; 2) CNA results in 220KB windows; 3) heatmap; 4) hclustering object.
 #'
 #' @examples
@@ -26,7 +27,7 @@
 ###
 
 
-copykat <- function(rawmat=rawdata, id.type="S", cell.line="no", ngene.chr=5,LOW.DR=0.05, UP.DR=0.1, win.size=25, norm.cell.names="", KS.cut=0.1, sam.name="", distance="euclidean", output.seg="FALSE", plot.genes="TRUE", genome="hg20", n.cores=1){
+copykat <- function(rawmat=rawdata, id.type="S", cell.line="no", ngene.chr=5,LOW.DR=0.05, UP.DR=0.1, win.size=25, norm.cell.names="", KS.cut=0.1, sam.name="", distance="euclidean", output.seg="FALSE", plot.genes="TRUE", genome="hg20", n.cores=1, plotting_data=""){
 
 start_time <- Sys.time()
   set.seed(1234)
@@ -451,7 +452,12 @@ start_time <- Sys.time()
   rbPal5 <- colorRampPalette(RColorBrewer::brewer.pal(n = 8, name = "Dark2")[2:1])
   compreN_pred <- rbPal5(2)[as.numeric(factor(com.preN))]
 
-  cells <- rbind(compreN_pred,compreN_pred)
+  ck.cell_types <- plotting_data[plotting_data$cell_name %in% names(com.preN), ]
+  colnames(ck.cell_types) <- c("cell_name","cell_type","cell_colour", "cell_timepoint", "tp_colour")
+  
+  cells <- rbind(compreN_pred, ck.cell_types$cell_colour, ck.cell_types$tp_colour)
+  #save(cells, file = "rowcolours.RData")
+  #save(com.preN, file = "normal_cells.RData")
 
   if (ncol(mat.adj)< 3000){
     h <- 10
@@ -694,7 +700,9 @@ start_time <- Sys.time()
     rbPal5 <- colorRampPalette(RColorBrewer::brewer.pal(n = 8, name = "Dark2")[2:1])
     compreN_pred <- rbPal5(2)[as.numeric(factor(com.preN))]
 
-    cells <- rbind(compreN_pred,compreN_pred)
+    ck.cell_types <- as.data.frame(plotting_data[rownames(plotting_data) %in% names(com.preN), ])
+
+    cells <- rbind(compreN_pred, ck.cell.types$`colour$celltype`)
 
     if (ncol(mat.adj)< 3000){
       h <- 10

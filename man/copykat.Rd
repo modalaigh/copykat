@@ -19,7 +19,8 @@ copykat(
   output.seg = "FALSE",
   plot.genes = "TRUE",
   genome = "hg20",
-  n.cores = 1
+  n.cores = 1,
+  plotting_data = ""
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ copykat(
 \item{genome}{hg20 or mm10, current version only work for human or mouse genes}
 
 \item{n.cores}{number of cores for parallel computing.}
+
+\item{plotting_data, }{data for plotting on heatmap (i.e. cell type and timepoint colours)}
 }
 \value{
 1) aneuploid/diploid prediction results; 2) CNA results in 220KB windows; 3) heatmap; 4) hclustering object.
